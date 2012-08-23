@@ -2,13 +2,14 @@ require 'find'
 
 module Doc
   class Builder < BaseTask
-    attr_reader :index, :main, :source_dir, :paths
+    attr_reader :index, :main, :source_dir, :paths, :template
     def initialize(documentor, options)
       super
       @index = options[:index].to_s if options[:index]
       @main = options[:main].to_s if options[:main]
       @source_dir = FSPath(options[:source_dir]).expand_path if options[:source_dir]
       @paths = Array(options[:paths]) if options[:paths]
+      @template = options[:template] if options[:template]
 
       unless @source_dir || @paths
         raise 'both source_dir and paths are not set'
@@ -72,6 +73,7 @@ module Doc
       cmd.add "--title=#{title}"
       cmd.add "--output=#{doc_dir}"
       cmd.add "--main=#{main}" if main
+      cmd.add "--template=#{template}" if template
       cmd.add *paths if paths
 
       chdir_source_dir do
